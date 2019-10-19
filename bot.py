@@ -42,7 +42,7 @@ for submission in submissions:
                 post_details['esh_cnt'] += 1
             elif match_value == 'NAH':
                 post_details['nah_cnt'] += 1
-    if post_details['yta_cnt'] > 10 and post_details['yta_cnt'] < post_details['nta_cnt']:
+    if post_details['yta_cnt'] > 10 and post_details['yta_cnt'] > post_details['nta_cnt']:
         submission.reply('yta dude')
 
     posts[submission_id] = post_details
