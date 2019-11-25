@@ -3,15 +3,13 @@
 
 import config
 import praw
-from praw.models import MoreComments
 import re
 
-
-reddit = praw.Reddit(   client_id = 'fGV1ld_pO962fQ'
-                        , client_secret = 'Z6zFB0v2aw-qAPC0xM-k8nMTuec'
+reddit = praw.Reddit(   client_id=config.client_id
+                        , client_secret=config.client_secret
                         , user_agent='testscript by /u/fakebot3'
-                        , username = config.reddit_username
-                        , password = config.reddit_password)
+                        , username=config.reddit_username
+                        , password=config.reddit_password)
 
 opinion_check = re.compile(r'YTA|NTA|ESH|NAH ')
 
@@ -31,7 +29,7 @@ for mention in reddit.inbox.mentions(limit=25):
 
     for top_level_comment in comments:
         if submission.num_comments > 100:
-            if isinstance(top_level_comment, MoreComments):
+            if isinstance(top_level_comment):
                 continue
             opinion = opinion_check.search(top_level_comment.body)
             if opinion:
@@ -52,7 +50,7 @@ for mention in reddit.inbox.mentions(limit=25):
 
     if float(perc_yta,) > 0.50:
         print('Asshole detected')
-        mention.reply('Asshole detected')
+        # mention.reply('Asshole detected')
 
 
 
