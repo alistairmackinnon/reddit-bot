@@ -3,6 +3,8 @@
 
 import config
 import praw
+from datetime import datetime
+from datetime import timedelta
 from praw.models import MoreComments
 
 reddit = praw.Reddit(client_id=config.client_id
@@ -11,14 +13,27 @@ reddit = praw.Reddit(client_id=config.client_id
                      , username=config.reddit_username
                      , password=config.reddit_password)
 
-posts = {}
+comments = {}
 
-for submission in reddit.subreddit('askreddit').controversial(limit=1):
+for submission in reddit.subreddit('askreddit').hot(limit=1):
     sub = reddit.submission(id=submission)
-    posts[sub.id] = {'title': sub.title, 'ratio': sub.upvote_ratio, 'score': sub.score, 'num_comments': sub.num_comments}
+    submission.comments.replace_more(limit=0)
+    submission.comment_sort = 'top'
+    post_time = submission.created_utc
 
-for i in posts:
-    print(posts[i]['title'])
+    i = 0
+    for top_level_comment in submission.comments:
+        if top_level_comment.is_submitter:
+            continue
+        sec_since_post = top_level_comment.created_utc - post_time
+        min_since_post = round(sec_since_post / 60)
+        comments[top_level_comment.id] = {'min_since_post': min_since_post
+                                            ,  'score': sub.score}
+        i += 1
+        if i == 10:
+            break
+
+print(comments)
 
 
 
