@@ -13,7 +13,7 @@ reddit = praw.Reddit(client_id=config.client_id
 
 posts = {}
 
-for submission in reddit.subreddit('askreddit').controversial(limit=10):
+for submission in reddit.subreddit('askreddit').controversial(limit=1):
     sub = reddit.submission(id=submission)
     posts[sub.id] = {'title': sub.title, 'ratio': sub.upvote_ratio, 'score': sub.score, 'num_comments': sub.num_comments}
 
