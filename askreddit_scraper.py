@@ -3,9 +3,9 @@
 
 import config
 import praw
-from datetime import datetime
-from datetime import timedelta
-from praw.models import MoreComments
+import pandas as pd
+import matplotlib.pyplot as plt
+
 
 reddit = praw.Reddit(client_id=config.client_id
                      , client_secret=config.client_secret
@@ -13,30 +13,28 @@ reddit = praw.Reddit(client_id=config.client_id
                      , username=config.reddit_username
                      , password=config.reddit_password)
 
-comments = {}
-
+comments = []
 for submission in reddit.subreddit('askreddit').hot(limit=1):
+    print(submission.title)
     sub = reddit.submission(id=submission)
-    submission.comments.replace_more(limit=0)
+    submission.comments.replace_more(limit=10)
     submission.comment_sort = 'top'
     post_time = submission.created_utc
 
-    i = 0
+
     for top_level_comment in submission.comments:
-        if top_level_comment.is_submitter:
-            continue
         sec_since_post = top_level_comment.created_utc - post_time
         min_since_post = round(sec_since_post / 60)
-        comments[top_level_comment.id] = {'min_since_post': min_since_post
-                                            ,  'score': sub.score}
-        i += 1
-        if i == 10:
-            break
+        details = (top_level_comment.id,  min_since_post, top_level_comment.score)
+        comments.append(details)
 
-print(comments)
+df = pd.DataFrame.from_records(comments, columns=['id', 'min_since_post', 'score'])
 
+df2 = df.groupby('min_since_post').mean().rolling(5)
+df2.sort_index(inplace=True)
 
-
+pltx = df2.plot(figsize=(10,4), legend=False)
+plt.show(pltx)
 
 
 
