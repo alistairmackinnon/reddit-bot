@@ -14,13 +14,12 @@ reddit = praw.Reddit(client_id=config.client_id
                      , password=config.reddit_password)
 
 comments = []
-for submission in reddit.subreddit('askreddit').hot(limit=5):
+for submission in reddit.subreddit('askreddit').hot(limit=1):
     print(submission.title)
     sub = reddit.submission(id=submission)
-    submission.comments.replace_more(limit=15)
+    submission.comments.replace_more(limit=0)
     submission.comment_sort = 'top'
     post_time = submission.created_utc
-
 
     for top_level_comment in submission.comments:
         sec_since_post = top_level_comment.created_utc - post_time
@@ -51,10 +50,8 @@ df = pd.DataFrame.from_records(comments, columns=['id', 'band', 'score'])
 df2 = df.groupby('band').median()
 df2.sort_index(inplace=True)
 
-print(df2['score'])
-
-pltx = df2.plot(figsize=(10,4), legend=False)
-plt.show(pltx)
+output = df2.plot(figsize=(10, 4), legend=False)
+plt.savefig('test.png')
 
 
 
