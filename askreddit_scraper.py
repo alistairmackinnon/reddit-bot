@@ -14,10 +14,10 @@ reddit = praw.Reddit(client_id=config.client_id
                      , password=config.reddit_password)
 
 comments = []
-for submission in reddit.subreddit('askreddit').hot(limit=1):
+for submission in reddit.subreddit('askreddit').hot(limit=10):
     print(submission.title)
     sub = reddit.submission(id=submission)
-    submission.comments.replace_more(limit=0)
+    submission.comments.replace_more(limit=None)
     submission.comment_sort = 'top'
     post_time = submission.created_utc
 
